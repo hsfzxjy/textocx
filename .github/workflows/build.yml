@@ -1,0 +1,30 @@
+name: Build and Deploy
+
+on:
+  push:
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: Build JS Deps
+        run: |
+          ls Temml/dist
+          cd mathml2omml
+          npm install
+          npm run transpile
+          ls dist
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --verbose --release
