@@ -2,6 +2,12 @@ name: Build and Deploy
 
 on:
   push:
+    tags:
+      # # Regex for a version number such as YYYY-MM-DD.XXX
+      - "[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9].[0-9]+"
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -14,6 +20,7 @@ jobs:
           submodules: true
       - name: Build JS Deps
         run: |
+          echo ${{github.ref_name}}
           ls Temml/dist
           cd mathml2omml
           npm install
@@ -28,3 +35,11 @@ jobs:
         with:
           command: build
           args: --verbose --release
+      - name: Rename
+        run: |
+          mv target/release/textocx.exe ./textocx-${{github.ref_name}}.exe
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./textocx-${{github.ref_name}}.exe
