@@ -1,0 +1,28 @@
+[package]
+name = "textocx"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clipboard-win = "5.1.0"
+
+[dependencies.ac]
+version = "2.2.0"
+package = "async-channel"
+
+[dependencies.nwd]
+package = "native-windows-derive"
+version = "1.0.4"
+
+[dependencies.nwg]
+package = "native-windows-gui"
+version = "1.0.13"
+features = ["flexbox"]
+
+[dependencies.rq]
+package = "rquickjs"
+version = "0.4.3"
+default-features = false
+features = ["exports", "futures", "rust-alloc", "loader", "dyn-load", "macro"]
