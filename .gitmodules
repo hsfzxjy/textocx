@@ -1,0 +1,6 @@
+[submodule "mathml2omml"]
+	path = mathml2omml
+	url = https://github.com/fiduswriter/mathml2omml/
+[submodule "Temml"]
+	path = Temml
+	url = https://github.com/ronkok/Temml
