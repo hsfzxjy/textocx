@@ -5,13 +5,13 @@
 ## What
 TextOCX is a Windows program that converts TeX snippet to MSOffice pastable format. with highlights:
  - 🚀 **Lightweight & Fast.** TextOCX comes with a standalone executable file of size ~2MB. No installation, nor extra denpendency.
- - 📒 **Not just formula.** TextOCX supports parsing mixed content with text and formula.
+ - 📒 **More Than Just Formula.** TextOCX supports rendering mixed content with text and formula.
 
 ## Why
 
 From time to time, I find myself needing to transfer the outcomes of certain Tex codes into MS Word or PowerPoint, and every time the process feels cumbersome and frustrating. Existing tools appear to gravitate towards two extremes of the spectrum:
  - Tools like `pandoc` excel at converting full-length documents, yet not quite handy for small chunks of snippets;
- - Tools like `mathpix`, `MathType` or `Temml` excel at converting single piece of formula, yet not able to handle mixed content that includes normal texts.
+ - Tools like `mathpix`, `MathType` or `Temml` excel at converting single piece of formula, yet not able to handle mixed content that includes interlaced texts.
 
 Hence, I developed TextOCX to bridge the gap in the middle, addressing the shortcomings of existing tools.
 
