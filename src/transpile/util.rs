@@ -1,3 +1,5 @@
+use std::borrow::{Borrow, Cow};
+
 use rq::{function::IntoJsFunc, IntoJs, Object};
 
 pub trait ThrowJs {
@@ -34,5 +36,32 @@ impl<'js> SetFunc<'js> for Object<'js> {
         let ctx = self.ctx();
         self.set(name.as_ref(), rq::Function::new(ctx.clone(), f))?;
         Ok(self)
+    }
+}
+
+pub trait Bind<'a> {
+    type B: 'a + ToOwned + ?Sized;
+    fn bind<F>(self, f: F) -> Cow<'a, Self::B>
+    where
+        F: FnOnce(&Self::B) -> Cow<Self::B>;
+}
+
+impl<'a, B> Bind<'a> for Cow<'a, B>
+where
+    B: ToOwned + ?Sized + 'a,
+{
+    type B = B;
+
+    fn bind<F>(self, f: F) -> Cow<'a, Self::B>
+    where
+        F: FnOnce(&Self::B) -> Cow<Self::B>,
+    {
+        match self {
+            Cow::Borrowed(s) => f(s),
+            Cow::Owned(s) => match f(s.borrow()) {
+                Cow::Borrowed(_) => Cow::Owned(s),
+                Cow::Owned(s) => Cow::Owned(s),
+            },
+        }
     }
 }

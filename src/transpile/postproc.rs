@@ -1,3 +1,4 @@
+use super::util::Bind;
 use std::borrow::Cow;
 
 type StaticString = Cow<'static, str>;
@@ -67,6 +68,13 @@ pub(super) fn italic_math(enabled: bool) -> impl for<'a> FnMut(Piece<'a>) -> Pie
             };
         }
         p
+    }
+}
+
+pub(super) fn escape_html(p: Piece) -> Piece {
+    Piece {
+        content: p.content.bind(html_escape::encode_safe),
+        ..p
     }
 }
 

@@ -90,7 +90,9 @@ impl Solver {
         Ok(wrap_html(
             pieces
                 .into_iter()
-                .flat_map(postproc::italic_math(job.italic_math)),
+                .map(postproc::italic_math(job.italic_math))
+                .map(postproc::escape_html)
+                .flatten(),
         ))
     }
 }
