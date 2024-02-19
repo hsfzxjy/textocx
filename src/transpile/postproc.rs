@@ -72,9 +72,12 @@ pub(super) fn italic_math(enabled: bool) -> impl for<'a> FnMut(Piece<'a>) -> Pie
 }
 
 pub(super) fn escape_html(p: Piece) -> Piece {
-    Piece {
-        content: p.content.bind(html_escape::encode_safe),
-        ..p
+    match p.typ {
+        Type::Text => Piece {
+            content: p.content.bind(html_escape::encode_safe),
+            ..p
+        },
+        _ => p,
     }
 }
 
