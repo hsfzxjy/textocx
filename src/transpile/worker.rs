@@ -20,7 +20,6 @@ while (true) {
     let res;
     try {
         const mml = temml.renderToString(params.input, {throwOnError: true, ...params});
-        console.log(mml);
         res = {omml: mml2omml(mml).replace(` xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math"`, "")};
     } catch(e) {
         res = {error: e.toString()};

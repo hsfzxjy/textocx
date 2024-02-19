@@ -129,6 +129,28 @@ fn begin_environ(input: &str) -> nom::IResult<&str, EnvironName> {
             bc::tag("alignat"),
             bc::tag("CD"),
             bc::tag("multline"),
+            alt((
+                bc::tag("darray"),
+                bc::tag("dcases"),
+                bc::tag("drcases"),
+                bc::tag("matrix*"),
+                bc::tag("pmatrix*"),
+                bc::tag("bmatrix*"),
+                bc::tag("Bmatrix*"),
+                bc::tag("vmatrix*"),
+                bc::tag("Vmatrix*"),
+            )),
+            alt((
+                bc::tag("equation*"),
+                bc::tag("align*"),
+                bc::tag("gather*"),
+                bc::tag("alignat*"),
+            )),
+            alt((
+                bc::tag("gathered"),
+                bc::tag("aligned"),
+                bc::tag("alignedat"),
+            )),
         )),
         cc::space0.and(bc::tag("}")),
     )(input)
