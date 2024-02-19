@@ -87,6 +87,7 @@ impl Solver {
             pieces[loc] = postproc::Piece::from_math(omml.into());
         }
 
+        #[allow(clippy::map_flatten)]
         Ok(wrap_html(
             pieces
                 .into_iter()
