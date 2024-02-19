@@ -36,7 +36,7 @@ pub struct App {
     #[nwg_events(OnButtonClick: [App::do_paste(SELF)])]
     pub(super) copy_button: nwg::Button,
 
-    #[nwg_control(parent: window, focus: true, flags: "VSCROLL | VISIBLE")]
+    #[nwg_control(parent: window, focus: true, flags: "VSCROLL | VISIBLE | TAB_STOP")]
     #[nwg_events(OnTextInput: [App::try_queue_job(SELF)])]
     pub(super) tex_edit: nwg::TextBox,
 
