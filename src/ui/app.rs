@@ -25,7 +25,7 @@ pub struct App {
     #[nwg_events(OnMinMaxInfo: [App::on_window_minmax(SELF, EVT_DATA)], OnWindowClose: [App::on_close(SELF)])]
     pub(super) window: nwg::Window,
 
-    #[nwg_control(parent: window, focus: true, text: "Italic Math")]
+    #[nwg_control(parent: window, focus: true, text: "Italic Math", check_state: CheckBoxState::Checked)]
     #[nwg_events(OnButtonClick: [App::try_queue_job(SELF)])]
     pub(super) italic_check_box: nwg::CheckBox,
 
@@ -90,15 +90,20 @@ impl App {
     }
 
     fn paste(&self, msg: &[u8]) {
-        (move || {
+        let res = (move || {
             let _cb = clipboard_win::Clipboard::new_attempts(10)?;
             let fmt = clipboard_win::raw::register_format("HTML Format").unwrap();
             clipboard_win::raw::set(fmt.get(), msg)
-        })()
-        .expect("fail to paste");
-        self.status_bar
-            .set_text(0, "Rendered. Copied to clipboard.");
-        self.toggle_copy_button(false)
+        })();
+        self.status_bar.set_text(
+            0,
+            if res.is_ok() {
+                "Rendered. Copied to clipboard."
+            } else {
+                "Rendered. Fail to write clipboard, maybe try again later."
+            },
+        );
+        self.toggle_copy_button(res.is_err())
     }
 }
 
