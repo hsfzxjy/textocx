@@ -17,11 +17,11 @@ Hence, I developed TextOCX to bridge the gap in the middle, addressing the short
 
 ## TODO
 
-TextOCX is currently an MVP that supports only inline formulas. More features are comming:
+TextOCX is currently an MVP and more features are comming:
 
-- [ ] Support `$$...$$` and `\begin{equation}`, etc..
+- [x] Support `$$...$$` and `\begin{equation}`, etc..
 - [ ] Improve handling multi-line inputs.
-- [ ] Improve handling HTML special characters.
+- [x] Improve handling HTML special characters.
 
 
 ## Screencast Preview
