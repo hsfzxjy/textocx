@@ -116,43 +116,47 @@ fn environ(input: &str) -> nom::IResult<&str, Part> {
     .map_output(Type::Environ.builder())
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct EnvironName<'a>(&'a str);
 
+#[test]
+fn test_begin_environ() {
+    for name in "equation equation* 
+    alignedat alignat alignat* aligned align align*
+    gathered gather gather* CD multline darray
+    dcases drcases matrix* pmatrix* 
+    bmatrix* Bmatrix* vmatrix* Vmatrix*"
+        .split_whitespace()
+    {
+        assert_eq!(
+            begin_environ(&format!("\\begin{{{}}}", name)),
+            Ok(("", EnvironName(name)))
+        );
+    }
+}
+
 fn begin_environ(input: &str) -> nom::IResult<&str, EnvironName> {
+    use bc::tag;
+    use nom::combinator::{opt, recognize};
+    let ast = |name: &'static str| recognize(tag(name).and(opt(tag("*"))));
+
+    // https://temml.org/docs/en/supported#environments
     delimited(
-        bc::tag("\\begin{").and(cc::space0),
+        tag("\\begin{").and(cc::space0),
         alt((
-            bc::tag("equation"),
-            bc::tag("align"),
-            bc::tag("gather"),
-            bc::tag("alignat"),
-            bc::tag("CD"),
-            bc::tag("multline"),
-            alt((
-                bc::tag("darray"),
-                bc::tag("dcases"),
-                bc::tag("drcases"),
-                bc::tag("matrix*"),
-                bc::tag("pmatrix*"),
-                bc::tag("bmatrix*"),
-                bc::tag("Bmatrix*"),
-                bc::tag("vmatrix*"),
-                bc::tag("Vmatrix*"),
-            )),
-            alt((
-                bc::tag("equation*"),
-                bc::tag("align*"),
-                bc::tag("gather*"),
-                bc::tag("alignat*"),
-            )),
-            alt((
-                bc::tag("gathered"),
-                bc::tag("aligned"),
-                bc::tag("alignedat"),
-            )),
+            ast("equation"),
+            tag("alignedat"),
+            ast("alignat"),
+            tag("aligned"),
+            ast("align"),
+            tag("gathered"),
+            ast("gather"),
+            tag("CD"),
+            tag("multline"),
+            alt((tag("darray"), tag("dcases"), tag("drcases"))),
+            recognize(opt(cc::one_of("pbBvV")).and(tag("matrix*"))),
         )),
-        cc::space0.and(bc::tag("}")),
+        cc::space0.and(tag("}")),
     )(input)
     .map_output(EnvironName)
 }
