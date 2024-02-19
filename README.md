@@ -15,15 +15,6 @@ From time to time, I find myself needing to transfer the outcomes of certain Tex
 
 Hence, I developed TextOCX to bridge the gap in the middle, addressing the shortcomings of existing tools.
 
-## TODO
-
-TextOCX is currently an MVP and more features are comming:
-
-- [x] Support `$$...$$` and `\begin{equation}`, etc..
-- [ ] Improve handling multi-line inputs.
-- [x] Improve handling HTML special characters.
-
-
 ## Screencast Preview
 https://github.com/hsfzxjy/textocx/assets/4702188/8aa2e166-7ac0-4d98-a8ab-74af4144e108
 
