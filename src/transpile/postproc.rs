@@ -81,6 +81,18 @@ pub(super) fn escape_html(p: Piece) -> Piece {
     }
 }
 
+pub(super) fn preserve_spaces(enabled: bool) -> impl for<'a> FnMut(Piece<'a>) -> Piece<'a> {
+    move |mut p| {
+        if enabled && p.typ == Type::Text {
+            p.dec = Decoration {
+                prefix: Some("<pre>".into()),
+                suffix: Some("</pre>".into()),
+            };
+        }
+        p
+    }
+}
+
 #[derive(Default)]
 struct Decoration {
     prefix: Option<StaticString>,

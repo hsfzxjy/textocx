@@ -13,6 +13,7 @@ use self::{postproc::Piece, wrap_html::wrap_html};
 
 pub struct Job {
     pub italic_math: bool,
+    pub preserve_spaces: bool,
     pub tex_code: String,
 }
 
@@ -93,6 +94,7 @@ impl Solver {
                 .into_iter()
                 .map(postproc::italic_math(job.italic_math))
                 .map(postproc::escape_html)
+                .map(postproc::preserve_spaces(job.preserve_spaces))
                 .flatten(),
         ))
     }

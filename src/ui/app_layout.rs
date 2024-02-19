@@ -13,6 +13,10 @@ impl App {
         data.set_min_size(SIZE.0, SIZE.1);
     }
     pub(super) fn layout_self(app: &AppUi) -> Result<(), nwg::NwgError> {
+        const TOOLBOX_SIZE: Size<D> = Size {
+            width: D::Percent(1.),
+            height: D::Points(25.),
+        };
         nwg::FlexboxLayout::builder()
             .parent(&app.window)
             .flex_direction(FlexDirection::Column)
@@ -23,15 +27,11 @@ impl App {
                 bottom: D::Points(25.),
             })
             .child(&app.italic_check_box)
-            .child_size(Size {
-                width: D::Percent(1.),
-                height: D::Points(25.),
-            })
+            .child_size(TOOLBOX_SIZE)
+            .child(&app.preserve_spaces_check_box)
+            .child_size(TOOLBOX_SIZE)
             .child(&app.auto_copy_check_box)
-            .child_size(Size {
-                width: D::Percent(1.),
-                height: D::Points(25.),
-            })
+            .child_size(TOOLBOX_SIZE)
             .child(&app.copy_button)
             .child_size(Size {
                 width: D::Percent(1.0),

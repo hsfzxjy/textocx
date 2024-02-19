@@ -29,6 +29,10 @@ pub struct App {
     #[nwg_events(OnButtonClick: [App::try_queue_job(SELF)])]
     pub(super) italic_check_box: nwg::CheckBox,
 
+    #[nwg_control(parent: window, focus: true, text: "Preserve Spaces", check_state: CheckBoxState::Checked)]
+    #[nwg_events(OnButtonClick: [App::try_queue_job(SELF)])]
+    pub(super) preserve_spaces_check_box: nwg::CheckBox,
+
     #[nwg_control(parent: window, focus: true, text: "Auto Copy", check_state: CheckBoxState::Checked)]
     pub(super) auto_copy_check_box: nwg::CheckBox,
 
@@ -74,6 +78,10 @@ impl App {
         self.toggle_copy_button(false);
         comm.model.queue_job(transpile::Job {
             italic_math: self.italic_check_box.check_state() == CheckBoxState::Checked,
+            preserve_spaces: self
+                .preserve_spaces_check_box
+                .check_state()
+                == CheckBoxState::Checked,
             tex_code: self.tex_edit.text(),
         });
         comm.prev_queue_at = time::Instant::now();
