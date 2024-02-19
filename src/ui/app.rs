@@ -56,7 +56,7 @@ pub struct App {
 
     pub(super) state: RefCell<Option<State>>,
 }
-const DEBOUNCE_DURATION: Duration = Duration::from_millis(1000);
+const DEBOUNCE_DURATION: Duration = Duration::from_millis(600);
 
 impl App {
     fn toggle_copy_button(&self, enabled: bool) {
