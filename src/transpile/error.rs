@@ -7,10 +7,12 @@ pub enum Error {
 }
 
 impl Error {
-    pub(super) fn bad_input<T, S: Into<Cow<'static, str>>>(msg: S) -> Result<T, Error> {
-        Err(Error::BadInput(msg.into()))
+    pub(super) fn bad_input<S: std::error::Error>(msg: S) -> Error {
+        Error::BadInput(msg.to_string().into())
     }
 }
+
+impl std::error::Error for Error {}
 
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

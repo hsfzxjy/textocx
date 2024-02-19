@@ -1,13 +1,15 @@
 mod comm;
 mod error;
+mod parser;
+mod postproc;
 mod util;
 mod worker;
 mod wrap_html;
 
 pub use error::Error;
-use std::{borrow::Cow, result::Result as stdResult, thread::JoinHandle};
+use std::{result::Result as stdResult, thread::JoinHandle};
 
-use self::wrap_html::wrap_html;
+use self::{postproc::Piece, wrap_html::wrap_html};
 
 pub struct Job {
     pub italic_math: bool,
@@ -18,7 +20,7 @@ pub type Result = stdResult<String, Error>;
 
 pub struct Solver {
     jhs: Vec<JoinHandle<stdResult<(), rq::Error>>>,
-    reqch: ac::Sender<comm::Request>,
+    reqch: ac::Sender<Option<comm::Request>>,
     respch: ac::Receiver<comm::Response>,
 }
 
@@ -26,7 +28,7 @@ impl Drop for Solver {
     fn drop(&mut self) {
         for _ in 0..self.jhs.len() {
             self.reqch
-                .send_blocking(comm::Request::Shutdown)
+                .send_blocking(None)
                 .expect("fail to send shutdown signal");
         }
         for jh in self.jhs.drain(..) {
@@ -51,34 +53,44 @@ impl Solver {
         }
     }
 
+    fn solve_math_part<R: Default>(
+        &self,
+        part: parser::Part,
+        loc: usize,
+        counter: &mut usize,
+    ) -> R {
+        self.reqch
+            .send_blocking(Some(comm::Request {
+                loc,
+                tex: String::from(part.as_str()),
+                display_mode: part.typ != parser::Type::InlineMath,
+            }))
+            .unwrap();
+        *counter += 1;
+        Default::default()
+    }
+
     pub fn solve(&self, job: Job) -> Result {
-        let tex = &job.tex_code;
-        let mut parts: Vec<Cow<str>> = tex
-            .split('$')
-            .map(Cow::Borrowed)
-            .collect();
-        if parts.len() % 2 == 0 {
-            Error::bad_input("odd number of $")?;
-        }
-
-        let n = parts.len() / 2;
-        for i in 0..n {
-            self.reqch
-                .send_blocking(comm::Request::Process {
-                    loc: i,
-                    tex: String::from(parts[i * 2 + 1].as_ref()),
-                })
-                .unwrap();
-        }
-        for _ in 0..n {
+        let mut n_maths = 0;
+        let mut pieces = parser::parse(&job.tex_code)
+            .map_err(Error::bad_input)?
+            .into_iter()
+            .enumerate()
+            .map(|(i, p)| match p.typ {
+                parser::Type::Text => Piece::from_text(p.as_str()),
+                _ => self.solve_math_part(p, i, &mut n_maths),
+            })
+            .collect::<Vec<_>>();
+        for _ in 0..n_maths {
             let comm::Response { omml, loc } = self.respch.recv_blocking().unwrap();
-            let mut omml = omml.map_err(Error::JS)?;
-            if job.italic_math {
-                omml = format!("<i>{}</i>", omml);
-            }
-            parts[2 * loc + 1] = Cow::Owned(omml);
+            let omml = omml.map_err(Error::JS)?;
+            pieces[loc] = postproc::Piece::from_math(omml.into());
         }
 
-        Ok(wrap_html(parts))
+        Ok(wrap_html(
+            pieces
+                .into_iter()
+                .flat_map(postproc::italic_math(job.italic_math)),
+        ))
     }
 }

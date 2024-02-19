@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 clipboard-win = "5.1.0"
+nom = "7.1.3"
 
 [dependencies.ac]
 version = "2.2.0"

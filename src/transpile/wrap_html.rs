@@ -8,7 +8,7 @@ where
         .chain(codes)
         .chain(once(TEMPLATE_SUFFIX.into()))
         .collect::<Vec<_>>()
-        .join("");
+        .concat();
     let code_len = result.len() - TEMPLATE_SUFFIX.len();
     let buf = unsafe { result.as_bytes_mut() };
     usize_to_str(&mut buf[META.start_html], META.html_open_in_prefix);
